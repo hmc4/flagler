@@ -1,23 +1,20 @@
 ---
 # facets generator
-# creates json of unique values and their counts of fields given in site.data.theme.metadata-facets-fields
+# creates a csv of unique values and their counts of fields given in site.data.theme.metadata-facets-fields
+#
+# Requires CB's array_count_uniq.rb plugin!
 ---
-{%- if site.data.theme.metadata-facets-fields -%}
+{%- assign items = site.data[site.metadata] | where_exp: 'item','item.objectid' -%}
 {%- assign fields = site.data.theme.metadata-facets-fields | split: "," -%}
 {
     "facets": [ 
-        {% for f in fields %}
-        {%- assign raw-terms = site.data[site.metadata] | map: f | compact | join: ";" | downcase | split: ";" -%}
-        {%- capture terms -%}{%- for t in raw-terms -%}{%- if t != "" and t != " " -%}{{ t | strip }};{%- endif -%}{%- endfor -%}{%- endcapture -%}
-        {%- assign terms = terms | split: ";" | sort -%}
-        {%- assign uniqueTerms = terms | uniq | sort -%}
+        {% for f in fields %}{%- assign uniqueArray = items | map: f | join: ";" | downcase | split: ";" | array_count_uniq -%} 
         {
             "field": {{ f | jsonify }},
-            "terms": { {% for u in uniqueTerms %}{% assign count = terms | where_exp: 'item', 'item == u' | size %}
-                {{ u | jsonify }}: {{ count }}{% unless forloop.last %},{% endunless %}{% endfor %}
+            "terms": { {% for unique in uniqueArray %}
+                {{ unique[0] | jsonify }}: {{ unique[1] | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}
             }
         }{% unless forloop.last %},{% endunless %}
         {% endfor %}
     ]
 }
-{% endif %}

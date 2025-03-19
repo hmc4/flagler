@@ -1,7 +1,23 @@
-/*  base - slight modifications to override base Bootstrap
+/*  
+    base - slight modifications to override base Bootstrap
     these values are configurable using theme.yml > Theme Fonts area 
     or by editing base variables in cb.scss
 */
+
+/* set up base variable to override from cb.scss */
+$base-font-family: "" !default;
+$base-font-size: "" !default;
+$text-color: "" !default;
+$link-color: "" !default;
+
+/* smooth scroll for back to top, unless user opt out */
+html {
+    @media (prefers-reduced-motion: no-preference) {
+      scroll-behavior: smooth;
+    }
+}
+
+/* set font base set in theme.yml */
 body {
     @if $base-font-family != "" { font-family: $base-font-family; }
     @if $base-font-size != "" { font-size: $base-font-size; }
@@ -17,6 +33,7 @@ a {
         }
     }
 }
+
 /* skip nav for accessibility, based on https://webaim.org/techniques/skipnav/ */
 #skip-to-content a {
 	padding:6px;
@@ -41,7 +58,6 @@ a {
     transition: top .1s ease-in;
 }
 
-
 /* banner */
 #home-banner-logo { 
     height: 40px; 
@@ -54,7 +70,7 @@ a {
 
 /* footer */
 #footer-logo {
-    height: 40px;
+    height: 50px;
 }
 #footer-credits {
     img { height: 40px; }
@@ -75,11 +91,12 @@ a {
 #scroll-to-top {
     display: none; 
     position: fixed; 
-    bottom: 38px; 
-    right: 22px; 
+    bottom: 20px; 
+    right: 20px; 
     z-index: 99;
     font-size: 40px; 
 }
+
 /* feature include tweaks */
 .feature-alert p:last-of-type { margin-bottom: 0; }
 @media (min-width: 768px) {
@@ -95,14 +112,13 @@ a {
     .feature-w-100 {
         width: 100%!important;
     }
-    .feature-float-right {
+    .feature-float-end {
         float: right!important;
     }
-    .feature-float-left {
+    .feature-float-start {
         float: left!important;
     } 
 }
-
 
 /* bootstrap icons tweaks */
 .bi { 

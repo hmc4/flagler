@@ -1,12 +1,9 @@
-{%- if site.data.theme.icons -%}{% assign icons = site.data.theme.icons %}{% else %}
-{% assign cb_icons = site.pages | where: "name","cb-icons.svg" | first %}
-{% assign icons = cb_icons.icons %}{%- endif -%}
 {% if site.data.theme.map-child-objects == true %}
 {%- assign items = site.data[site.metadata] | where_exp: 'item','item.objectid' -%}
 {% else %}
-{%- assign items = site.data[site.metadata] | where_exp: 'item','item.objectid' | where_exp: 'item','item.parentid == nil' -%}
+{%- assign items = site.data[site.metadata] | where_exp: 'item','item.objectid and item.parentid == nil' -%}
 {% endif %}
-{%- assign items = items | where_exp: 'item', 'item.objectid != nil' | where_exp: 'item','item.latitude' -%}
+{%- assign items = items | where_exp: 'item','item.latitude != nil and item.longitude != nil' -%}
 {%- assign fields = site.data.config-map -%}
 <!-- load leaflet dependencies -->
 <script src="{{ '/assets/lib/leaflet/leaflet.js' | relative_url }}"></script>
@@ -22,9 +19,16 @@
     var geodata = { "type": "FeatureCollection", "features": [ 
     {% for item in items %}
     { "type":"Feature", "geometry":{ "type":"Point", "coordinates":[{{ item.longitude | strip }},{{ item.latitude | strip }}] }, "properties":
-    { "title": {{ item.title | jsonify }}, 
-    {% for f in fields %}{{ f.field | jsonify }}: {{ item[f.field] | jsonify }},{% endfor %}{% if item.youtubeid %} "youtube": {{ item.youtubeid | jsonify }}, {% endif %}
-    "format": {{ item.format | jsonify }}, {% if  item.filename contains '/' %}"filename": "{{ item.filename }}" {% else %}"filename":{{ '/objects/' | relative_url | append: item.filename | jsonify }}{% endif %}, "link": "{% if item.parentid %}{{ item.parentid }}#{{ item.objectid }}{% else %}{{ item.objectid }}{% endif %}", "id": {{ item.objectid | jsonify }} } }{% unless forloop.last %}, {% endunless %}{% endfor %}
+    { 
+        {% for f in fields %}{% if item[f.field] %}{{ f.field | escape | jsonify }}:{{ item[f.field] | strip | escape | jsonify }}, {%- endif -%}{%- endfor -%}
+        {% if item.image_thumb %}"img": {{ item.image_thumb | relative_url | jsonify }},{% endif %}
+        {% if item.display_template %}"template": {{ item.display_template | escape | jsonify }}, {%- endif -%}
+        {% if item.format %}"format": {{ item.format | escape | jsonify }}, {%- endif -%}
+        {% if item.image_alt_text %}"alt": {{ item.image_alt_text | escape | jsonify }}, {%- endif -%}
+        {% if item.parentid %}"parent": {{ item.parentid | jsonify }}, {%- endif -%}
+        "title": {{ item.title | escape | jsonify }},
+        "id": {{ item.objectid | jsonify }} 
+    } }{% unless forloop.last %}, {% endunless %}{% endfor %}
     ]};
 
     /* check for url parameters and set initial view options */ 
@@ -63,10 +67,10 @@
     {{ site.data.theme.map-base | default: 'Esri_WorldStreetMap' }}.addTo(map);
 
     {% if site.data.theme.map-search == true %}
-    /* add leaflet-fusesearch */
+    /* add search, https://github.com/naomap/leaflet-fusesearch */
     var options = {
         title: 'Search Map Items',
-        locationholder: 'Search map items...',
+        placeholder: 'Search map items...',
         threshold: {{ site.data.theme.map-search-fuzziness | default: 0.35 }},
         showResultFct: function(feature, container) {
             var result = `<strong>${feature.properties.title}</strong><br>`;
@@ -105,55 +109,42 @@
         {% if site.data.theme.map-search == true %}, removeOutsideVisibleBounds: false{% endif %} 
     });{% endif %}
 
-    /* function to create object popups */
+    /* get icons function */ 
+    {% include helpers/get-icon.js %}
+
+    /* object popup function */
     function objectPopups(feature, layer) {
-        {% if site.data.theme.map-search == true %}
-        /* bind feature for search */
+        {% if site.data.theme.map-search == true %}/* bind feature for search */
         feature.layer = layer;{% endif %}
-        /* calculate item link */
-        var itemHref = '{{ "/item.html?id=" | relative_url }}' + feature.properties.link;
-        /* find object thumb based on format */
-        var thumbSrc;
-        if (feature.properties.youtube) {
-            thumbSrc = 'https://img.youtube.com/vi/' +  feature.properties.youtube + '/default.jpg';
-        } else if (feature.properties.format && feature.properties.format.includes("image")) {
-            thumbSrc = feature.properties.filename;
-        } else if (feature.properties.format && feature.properties.format.includes("audio")) {
-            thumbSrc = '{{ "/assets/lib/icons/" | relative_url }}{{ icons.icon-audio }}.svg';
-        } else if (feature.properties.format && feature.properties.format.includes("video")) {
-            thumbSrc = '{{ "/assets/lib/icons/" | relative_url }}{{ icons.icon-video }}.svg'; 
-        } else if (feature.properties.format && feature.properties.format.includes("pdf")) {
-            thumbSrc = '{{ "/assets/lib/icons/" | relative_url }}{{ icons.icon-pdf }}.svg';
-        } else if (feature.properties.format && feature.properties.format.includes("compound")) {
-            thumbSrc = '{{ "/assets/lib/icons/" | relative_url }}{{ icons.icon-compound-object }}.svg';  
-        } else if (feature.properties.format && feature.properties.format.includes("multiple")) {
-            thumbSrc = '{{ "/assets/lib/icons/" | relative_url }}{{ icons.icon-multiple }}.svg';        
+        // find item link
+        var itemHref = `{{ '/items/' | relative_url }}${ feature.properties.parent ? feature.properties.parent + ".html#" + feature.properties.id : feature.properties.id + ".html"}`;
+        // find image
+        var imgAlt = feature.properties.alt ? feature.properties.alt : feature.properties.title;
+        var thumbImg;
+        if (feature.properties.img) {
+            thumbImg = '<img class="map-thumb" src="' + feature.properties.img + '" alt="' + imgAlt + '">';
         } else {
-            thumbSrc = '{{ "/assets/lib/icons/" | relative_url }}{{ icons.icon-default }}.svg';
-        }    
-        /* create popup content */
+            thumbImg = getIcon(feature.properties.template,feature.properties.format,"thumb")
+        }
+        // set up popup content
         var popupTemplate = '<h2 class="h4"><a class="text-dark" href="' + itemHref + '">' +
             feature.properties.title + '</a></h2><div class="text-center"><a href="' + itemHref + 
-            '" ><img class="map-thumb img-thumb" src="' +  thumbSrc + '" alt="item thumbnail"></a></div><p>';
-        /* add metadata fields */
+            '" >' + thumbImg + '</a></div><p>';
         {% for f in fields %}{% if f.display_name %}
-        if (feature.properties[{{ f.field | jsonify }}]) {
-            popupTemplate += '<strong>{{ f.display_name }}:</strong> ' + feature.properties[{{ f.field | jsonify }}] + '<br>'; 
+        if (feature.properties[{{ f.field | escape | jsonify }}]) {
+            popupTemplate += '<strong>{{ f.display_name }}:</strong> ' + feature.properties[{{ f.field | escape | jsonify }}] + '<br>'; 
         }
         {% endif %}{% endfor %}
-        /* add object link button to popup */
         popupTemplate += '</p><div class="text-center"><a class="btn btn-light" href="' + itemHref + '" >View Item</a></div>';
-        /* add object popup to map layer */
         layer.bindPopup(popupTemplate);
     }
-    /* function to add objects to map */
     function objectMarkers(feature,latlng) {
         var marker = L.marker(latlng, {alt: feature.properties.title});
         {% if site.data.theme.map-cluster == true %}markers.addLayer(marker);{% endif %}
         return marker;
     }
 
-    /* use geoJson features to add objects to map */
+    /* add objects from geoJson features */
     var mapFeatures = L.geoJson(geodata, {
         onEachFeature: objectPopups,
         pointToLayer: objectMarkers
@@ -170,7 +161,7 @@
         markers.enableClustering();
         document.querySelector('input.search-input').value = "";
     });{% endif %}
-
+    
     /* show popup if id in URL query */ 
     if (markerFilter != "") {
         {% if site.data.theme.map-cluster == true %}
@@ -193,4 +184,5 @@
     }
 
 })();
+
 </script>

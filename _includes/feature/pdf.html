@@ -27,14 +27,14 @@
 {%- capture pdf_caption -%}{{ include.caption }}{%- endcapture -%}
 {% else %}
 {%- assign item = site.data[site.metadata] | where: "objectid", include.objectid | first -%}
-{%- capture src -%}{% if  item.filename contains '/' %}{{ item.filename | relative_url }}{% else %}{{ '/objects/' | append: item.filename | relative_url }}{% endif %}{% endcapture %}
-{%- capture pdf_link -%}{% if item.parentid %}{{ item.objectid | prepend: '#' | prepend: item.parentid | prepend: '/item.html?id=' | relative_url }}{% else %}{{ item.objectid | prepend: '/item.html?id=' | relative_url }}{% endif %}{%- endcapture -%}
+{%- capture src -%}{{ item.object_location | relative_url }}{% endcapture %}
+{%- capture pdf_link -%}{{ '/items/' | relative_url }}{% if item.parentid %}{{ item.parentid }}.html#{{ item.objectid }}{% else %}{{ item.objectid }}.html{% endif %}{%- endcapture -%}
 {%- capture pdf_caption -%}{% if include.caption %}{{ include.caption }}{% else %}{{ item.title }}{% endif %}{%- endcapture -%}
 {% endif %}
 <div class="text-center">
     <figure class="figure border rounded p-1 feature-w-{{ include.width | default: '100' }}">
         <div class="{% unless include.height %}ratio ratio-{{ include.ratio | default: '1x1' }}{% endunless %}">
-            <object aria-label="pdf embed of {{ pdf_caption | escape }}" {% if include.height %}width="100%" height="{{ include.height }}"{% endif %} data="{{ src }}" type="application/pdf">
+            <object aria-label="pdf embed of {{ pdf_caption | escape }}" {% if include.height %}width="100%" height="{{ include.height }}"{% endif %} data="{{ src }}">
                 <p>The PDF is not rendering in your browser. Please <a href="{{ src }}">download the PDF</a> to view.</p>
             </object>
         </div>

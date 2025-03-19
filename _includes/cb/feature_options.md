@@ -20,16 +20,16 @@ Example Code --> `{% raw %}{% include feature/image.html objectid="demo_001" wid
 
 #### Multiple Images from the Collection (auto caption)
 
-{% include feature/image.html objectid="demo_001;demo_004;demo_005"  %}
+{% include feature/image.html objectid="demo_001;demo_004;demo_002"  %}
 
-Example Code --> `{% raw %}{% include feature/image.html objectid="demo_001;demo_004;demo_005"  %}{% endraw %}`
+Example Code --> `{% raw %}{% include feature/image.html objectid="demo_001;demo_004;demo_002"  %}{% endraw %}`
 
 
 #### Multiple Images from the Collection (with captions)
 
-{% include feature/image.html objectid="demo_001;demo_004;demo_005" width="75" caption="demo1;nother" %}
+{% include feature/image.html objectid="demo_001;demo_004;demo_002" width="75" caption="demo1;nother" %}
 
-Example Code --> `{% raw %}{% include feature/image.html objectid="demo_001;demo_004;demo_005" width="75" caption="demo1;nother" %}{% endraw %}`
+Example Code --> `{% raw %}{% include feature/image.html objectid="demo_001;demo_004;demo_002" width="75" caption="demo1;nother" %}{% endraw %}`
 
 
 #### External Image (without a caption)
@@ -94,7 +94,7 @@ Example Code --> `{% raw %}{% include feature/video.html objectid="demo_004" wid
 
 #### Video from the Collection (with a caption)
 
-{% include feature/video.html objectid="demo_004" width="50" caption="a video from the collection" %}
+{% include feature/video.html objectid="demo_005" width="50" caption="a video from the collection" %}
 
 Example Code --> `{% raw %}{% include feature/video.html objectid="demo_004" width="50" caption="a video from the collection" %}{% endraw %}`
 

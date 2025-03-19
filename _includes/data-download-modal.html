@@ -79,8 +79,8 @@
                 <div class="card my-3">
                     <div class="card-body">
                         <h2 class="card-title h4">Website Source Code</h2>
-                        <p class="card-text">GitHub repository containing source code for this project built with <a href="https://github.com/CollectionBuilder/collectionbuilder-gh" target="_blank" rel="noopener">CollectionBuilder-GH</a>.</p>
-                        <a href="{{ site.source-code | default: 'https://github.com/CollectionBuilder/collectionbuilder-gh' }}" class="btn btn-outline-dark" target="_blank">Source Code</a>
+                        <p class="card-text">GitHub repository containing source code for this project built with <a href="https://github.com/CollectionBuilder/collectionbuilder-csv" target="_blank" rel="noopener">CollectionBuilder-CSV</a>.</p>
+                        <a href="{{ site.source-code | default: 'https://github.com/CollectionBuilder/collectionbuilder-csv' }}" class="btn btn-outline-dark" target="_blank" rel="noopener">Source Code</a>
                     </div>
                 </div>
 
@@ -88,3 +88,127 @@
         </div>
     </div>
 </div>
+
+<script type="application/ld+json">
+{
+    "@context":"https://schema.org/",
+    "@type":"Dataset",
+    "name":"{{ site.title | escape }} Data",
+    "description":"Metadata and data derived from {{ site.title | escape }}. {{ site.description | escape }}",
+    {% if site.keywords %}"keywords": {% assign keywords = site.keywords | split: ';' %} {{ keywords | jsonify }},{% endif %}
+    "url":"{{ page.url | absolute_url }}",
+    "license" : "https://creativecommons.org/publicdomain/zero/1.0/",
+    "creator": [
+        {
+            "@type": "Organization",
+            "sameAs": "{{ site.organization-link }}",
+            "name": "{{ site.organization-name | escape }}"
+        }
+    ],
+    "hasPart" : [
+        {% if site.data.theme.metadata-facets-fields %}
+        {
+            "@type": "Dataset",
+            "name": "{{ site.title | escape }} Metadata Facets",
+            "description": "Unique values and counts of metadata facet fields.",
+            "license" : "https://creativecommons.org/publicdomain/zero/1.0/",
+            "distribution":[
+                {
+                    "@type":"DataDownload",
+                    "encodingFormat":"JSON",
+                    "contentUrl":"{{ '/assets/data/facets.json' | absolute_url }}"
+                }
+            ]      
+        },
+        {%- endif -%}
+        {% if stubs contains "subject" %}
+        {
+            "@type": "Dataset",
+            "name": "{{ site.title | escape }} metadata subject counts",
+            "description": "Unique values and counts of metadata subject fields.",
+            "license" : "https://creativecommons.org/publicdomain/zero/1.0/",
+            "distribution":[
+                {
+                    "@type":"DataDownload",
+                    "encodingFormat":"CSV",
+                    "contentUrl":"{{ '/assets/data/subjects.csv' | absolute_url }}"
+                },
+                {
+                    "@type":"DataDownload",
+                    "encodingFormat":"JSON",
+                    "contentUrl":"{{ '/assets/data/subjects.json' | absolute_url }}"
+                }
+            ]      
+        },
+        {%- endif -%}
+        {% if stubs contains "location" %}
+        {
+            "@type": "Dataset",
+            "name": "{{ site.title | escape }} metadata location counts",
+            "description": "Unique values and counts of metadata location fields.",
+            "license" : "https://creativecommons.org/publicdomain/zero/1.0/",
+            "distribution":[
+                {
+                    "@type":"DataDownload",
+                    "encodingFormat":"CSV",
+                    "contentUrl":"{{ '/assets/data/locations.csv' | absolute_url }}"
+                },
+                {
+                    "@type":"DataDownload",
+                    "encodingFormat":"JSON",
+                    "contentUrl":"{{ '/assets/data/locations.json' | absolute_url }}"
+                }
+            ]      
+        },
+        {%- endif -%}
+        {% if stubs contains "map" %}
+        {
+            "@type": "Dataset",
+            "name": "{{ site.title | escape }} geographic metadata",
+            "description": "Geojson data containing all objects with lat-longs and associated descriptive metadata.",
+            "license" : "https://creativecommons.org/publicdomain/zero/1.0/",
+            "distribution":[
+                {
+                    "@type":"DataDownload",
+                    "encodingFormat":"JSON",
+                    "contentUrl":"{{ '/assets/data/geodata.json' | absolute_url }}"
+                }
+            ]      
+        },
+        {%- endif -%}
+        {% if stubs contains "timeline" %}
+        {
+            "@type": "Dataset",
+            "name": "{{ site.title | escape }} timeline metadata",
+            "description": "Time-based metadata formatted for TimelineJS or other applications.",
+            "license" : "https://creativecommons.org/publicdomain/zero/1.0/",
+            "distribution":[
+                {
+                    "@type":"DataDownload",
+                    "encodingFormat":"JSON",
+                    "contentUrl":"{{ '/assets/data/timelinejs.json' | absolute_url }}"
+                }
+            ]      
+        },
+        {%- endif -%}
+        {
+            "@type": "Dataset",
+            "name": "{{ site.title | escape }} full metadata",
+            "description": "Complete metadata export for {{ site.title | escape }} objects.",
+            "license" : "https://creativecommons.org/publicdomain/zero/1.0/",
+            "distribution":[
+                {
+                    "@type":"DataDownload",
+                    "encodingFormat":"CSV",
+                    "contentUrl":"{{ '/assets/data/metadata.csv' | absolute_url }}"
+                },
+                {
+                    "@type":"DataDownload",
+                    "encodingFormat":"JSON",
+                    "contentUrl":"{{ '/assets/data/metadata.json' | absolute_url }}"
+                }
+            ]
+        }
+    ]
+}
+</script>

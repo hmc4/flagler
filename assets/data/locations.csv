@@ -1,20 +1,18 @@
 ---
 # find all unique locations used in the metadata
+#
+# Requires CB's array_count_uniq.rb plugin!
 ---
 {%- if site.data.theme.locations-fields -%}
-{%- assign cloud-fields = site.data.theme.subjects-fields | split: ";" -%}
-{% comment %} Capture all cloud terms {% endcomment %} 
-{%- assign raw-terms = "" -%}
-{%- for c in cloud-fields -%}
-{% assign new = site.data[site.metadata] | map: c | compact | join: ";" %}
-{% assign raw-terms = raw-terms | append: ";" | append: new %}
+{%- assign items = site.data[site.metadata] | where_exp: 'item','item.objectid' -%}
+{%- assign locations-fields = site.data.theme.locations-fields | split: ";" -%}
+{%- assign places = "" -%}
+{%- for c in locations-fields -%}
+{% assign new = items | map: c | join: ";" %}
+{% assign places = places | append: ";" | append: new %}
 {%- endfor -%}
-{%- assign raw-terms = raw-terms | downcase | split: ";" -%}
-{% comment %} Clean up raw terms {% endcomment %} 
-{%- capture terms -%}{%- for t in raw-terms -%}{%- if t != "" and t != " " -%}{{ t | strip }};{%- endif -%}{%- endfor -%}{%- endcapture -%}
-{%- assign terms = terms | split: ";" | sort -%}
-{%- assign uniqueTerms = terms | uniq | sort -%}
+{%- assign uniqPlaces = places | downcase | split: ";" | array_count_uniq -%}
 location,count,link
-{% for u in uniqueTerms %}{%- assign count = terms | where_exp: 'item', 'item == u' | size -%}
-"{{ u }}",{{ count }},"{{ u | uri_escape | prepend: "/browse.html#" | absolute_url }}"
-{% endfor %}{% endif %}
+{% for s in uniqPlaces %}"{{ s[0] }}",{{ s[1] }},"{{ s[0] | url_param_escape | prepend: '/browse.html#' | absolute_url }}"
+{% endfor %}
+{%- endif -%}
