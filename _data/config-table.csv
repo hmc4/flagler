@@ -1,5 +1,7 @@
 field,display_name
 title,Title
+creator,Creator
 date,Date
-description,Description
 subject,Subjects
+location,Location
+identifier,Identifier
