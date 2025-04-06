@@ -4,4 +4,4 @@ creator,Creator,,,Creator
 name_subject,People,true,,
 topical_subject,Subjects,true,,
 location,Location,true,,Location
-identifier,,,,Identifier
+identifier,Identifier,,,Identifier
