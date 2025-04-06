@@ -2,6 +2,7 @@ field,display_name
 title,Title
 creator,Creator
 date,Date
-subject,Subjects
+name_subject,People
+topical_subject,Subjects
 location,Location
 identifier,Identifier
