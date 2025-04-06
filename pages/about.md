@@ -8,10 +8,14 @@ credits: true
 # Look in _includes/feature for options to easily add features to the page
 ---
 
-{% include feature/jumbotron.html objectid="[https://campbell-ephemera.net/objects/small/186_18790503letteremmajthayertojulietteaeflagler_envside1copy_sm.jpg]" %} 
+{% include feature/jumbotron.html objectid="https://campbell-ephemera.net/objects/small/186_18790503letteremmajthayertojulietteaeflagler_envside1copy_sm.jpg" %} 
 
-{% include feature/nav-menu.html sections="About the Flagler-Campbell Epistolary" %}
+{% include feature/nav-menu.html sections="About the Flagler-Campbell Epistolary;Acknowledgments" %}
 
 ## About the Flagler-Campbell Epistolary
+
+In development
+
+## Acknowledgments
 
 In development
