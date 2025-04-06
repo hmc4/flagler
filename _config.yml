@@ -20,12 +20,12 @@ source-code: https://github.com/hmc4/flagler
 # title of site appears in banner
 title: Flagler-Campbell Epistolary
 # tagline, a short phrase that will appear throughout the site in the top banner
-tagline: Juliette A. E. Flagler correspondence
+tagline: Juliette A. E. Flagler literary memorabilia
 # description appears in meta tags and other locations
 # this description might appear in search result lists, keep around 160 characters max
-description: A selection of Juliette A. E. Flagler correspondence, collected and annotated by Craig G. Campbell.
+description: A collection of letters, envelopes, calling and cabinet cards, poems, postcards, photographs, and other literary memorabilia transcribed and annotated by Craig G. Campbell.
 # keywords, a short list of subjects describing the collection, separated by semicolon, to appear in rich markup
-keywords: correspondence;women;1800s
+keywords: correspondence;letters;envelopes;calling cards;cabinet cards;poems;postcards;photographs;literary memorabilia;women;19th century
 # creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
 author: hmc4
 
